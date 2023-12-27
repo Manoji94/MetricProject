@@ -3,44 +3,90 @@ import { Container, TextField, MenuItem, Paper, Button } from "@mui/material";
 import { AdapterDayjs, } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { DataGrid } from '@mui/x-data-grid';
-import { useEffect } from "react";
+import { useState, useEffect } from "react";
 import axios from 'axios';
+import dayjs from 'dayjs';
 
-
-const rows = [
-    { id: 1, col1: 'Hello', col2: 'World', col3: 'Everyone', col4: 'Everyone', col5: 'Everyone', col6: 'Everyone', col7: 'Everyone', col8: 'Everyone' },
-    // Add more rows as needed
-  ];
-  
-  const columns = [
-    { field: 'col1', headerName: 'SlNo', width: 150 },
-    { field: 'col2', headerName: 'Calibration Date', width: 150 },
-    { field: 'col3', headerName: 'Calibration Status', width: 150 },
-    { field: 'col4', headerName: 'Next calibration Date', width: 150 },
-    { field: 'col5', headerName: 'Certificate Status', width: 150 },
-    { field: 'col6', headerName: 'Certificate No', width: 150 },
-    { field: 'col7', headerName: 'Observed Size 1', width: 150 },
-    { field: 'col8', headerName: 'Calibrated At', width: 150 },
-    
-    // Add more columns as needed
-  ];
 
   
 function Instrument_History_Card() {
+    const [itemList, setItemList] = useState([]);
+    const [filteredData, setFilteredData] = useState([]);
+    const [filteredIMTEs, setFilteredIMTEs] = useState([])
+    const [distCalName,setDistCalName] = useState([]);
+    const [calDetails,setCalDetails] = useState({
+        calInsName : "",
+        calInsIMTENo: "",
+    });
+    const [selectedRow, setSelectedRow] = useState(null);
+
     useEffect(() => {
-      const fetchData = async () => {
-        try {
-          const response = await axios.get(
-            `${process.env.REACT_APP_PORT}/itemCal/getAllItemCals`
-          );
-          console.log(response.data); // Handle the response data as needed
-        } catch (error) {
-          console.error('Error fetching data:', error);
+        const fetchData = async () => {
+          try {
+            const response = await axios.get(
+              `${process.env.REACT_APP_PORT}/itemCal/getAllItemCals`
+            );
+            console.log(response.data); // Handle the response data as needed
+            setItemList(response.data.result)
+            setFilteredData(response.data.result)
+
+            const instrumentName = []
+            const filterData = response.data.result.filter(item => {
+                if (item.calItemName !=="" && !instrumentName.includes(item.calItemName)) {
+                    instrumentName.push(item.calItemName);
+                    return true;
+                }
+                return false;
+            });
+            setDistCalName(instrumentName);
+            console.log(instrumentName, "hi")
+
+
+          } catch (error) {
+            console.error('Error fetching data:', error);
+          }
+        
+        };
+      
+        fetchData(); // Call the function to fetch data when the component mounts
+      }, []);
+
+      
+      const handleSelectionModelChange = (selectionModel) => {
+        // Get the selected row data based on the selection model
+        const selectedRows = selectionModel.map((selectedId) =>
+            filteredData.find((row) => row._id === selectedId)
+        );
+        setSelectedRow(selectedRows[0]); // Assuming single row selection, adjust if needed
+        console.log("Selected Row: ", selectedRows[0]);
+    };
+
+     const handleCalDetails = (e) => {
+        const {name, value} = e.target;
+        
+        if(name === "calInsName"){
+            const imte = itemList.filter((item)=> item.calItemName === value)
+            setFilteredIMTEs(imte)
         }
-      };
+        setCalDetails((prev) => ({...prev, [name]: value}))
+     }
+      
+
+    
+  const columns = [
+    { field: '_id', headerName: 'SlNo', width: 50, renderCell: (params) => params.api.getAllRowIds().indexOf(params.id) + 1  },
+    { field: 'calItemCalDate', headerName: 'Calibration Date', width: 150, valueGetter: (params) => dayjs(params.row.calItemCalDate).format('DD-MM-YYYY') },
+    { field: 'col3', headerName: 'Calibration Status', width: 150 },
+    { field: 'calItemDueDate', headerName: 'Next calibration Date', width: 150, valueGetter: (params) => dayjs(params.row.calItemDueDate).format('DD-MM-YYYY') },
+    { field: 'col5', headerName: 'Certificate Status', width: 150 },
+    { field: 'calCertificateNo', headerName: 'Certificate No', width: 150 },
+    { field: 'col7', headerName: 'Observed Size 1', width: 150 },
+    { field: 'calUpdatedAt', headerName: 'Calibrated At', width: 150 },
+  ];
+
   
-      fetchData(); // Call the function to fetch data when the component mounts
-    }, []);
+
+
     
     return (
         <div>
@@ -60,21 +106,21 @@ function Instrument_History_Card() {
                         >
                             <div container spacing={2} className="row g-2">
                                 <div className="col-3">
-                                    <TextField label="Instrument Name" size="small" className="form-select" select name="instrumentName" defaultValue="" fullWidth >
-                                        <MenuItem value="">Instrument Name</MenuItem >
-                                        <MenuItem value="1">1</MenuItem >
-                                        <MenuItem value="2">2</MenuItem >
-                                        <MenuItem value="3">3</MenuItem >
-                                        <MenuItem value="4">4</MenuItem >
+                                    <TextField label="Instrument Name" size="small" onChange={handleCalDetails} select name="calInsName" value={calDetails.calInsName} fullWidth >
+                                        <MenuItem value="all">All</MenuItem >
+                                        {distCalName.map((cal)=> (
+                                            <MenuItem value={cal}>{cal}</MenuItem >
+                                        ))}
+                                        
                                     </TextField>
                                 </div>
                                 <div className="col-2">
-                                    <TextField label="IMTE No" size="small" className="form-select" select name="imteNo" defaultValue="" fullWidth >
-                                        <MenuItem value="">IMTE No</MenuItem >
-                                        <MenuItem value="1">1</MenuItem >
-                                        <MenuItem value="2">2</MenuItem >
-                                        <MenuItem value="3">3</MenuItem >
-                                        <MenuItem value="4">4</MenuItem >
+                                    <TextField label="IMTE No" size="small"  select  onChange={handleCalDetails} name="calInsIMTENo" value={calDetails.calInsIMTENo} fullWidth >
+                                        <MenuItem value="all">All</MenuItem >
+                                        {filteredIMTEs.map((cal)=> (
+                                        <MenuItem value={cal.calIMTENo}>{cal.calIMTENo}</MenuItem >
+                                        )
+                                        )}
                                     </TextField>
                                 </div>
 
@@ -131,16 +177,18 @@ function Instrument_History_Card() {
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            <tr>
-                                                <td>1</td>
-                                                <td>1</td>
-                                                <td>1</td>
-                                                <td>1</td>
-                                                <td>1</td>
-                                                <td>1</td>
-                                                <td>1</td>
-                                                <td>1</td>
-                                            </tr>
+                                    {selectedRow && (
+                                        <tr key={selectedRow._id}>
+                                            <td>1</td>
+                                            <td>{selectedRow.modelNo}</td>
+                                            <td>{selectedRow.calRangeSize}</td>
+                                            <td>{selectedRow.calibrationSource}</td>
+                                            <td>{selectedRow.premissibleSize}</td>
+                                            <td>{selectedRow.location}</td>
+                                            <td>{selectedRow.frequencyInMonths}</td>
+                                            <td>{selectedRow.make}</td>
+                                        </tr>
+                                    )}
                                         </tbody>
                                     </table>
                                 </div>
@@ -148,15 +196,19 @@ function Instrument_History_Card() {
                         </Paper>
                         <Paper>
                             <DataGrid
-                                rows={rows}
+                                rows={filteredData}
                                 columns={columns}
                                 initialState={{
                                     pagination: {
                                         paginationModel: { page: 0, pageSize: 5 },
                                     },
                                 }}
+                                getRowId={(row)=> row._id}
                                 pageSizeOptions={[5, 10]}
                                 checkboxSelection
+                                onSelectionModelChange={(selectionModel) =>
+                                  handleSelectionModelChange(selectionModel)
+                                } 
                             />
                         </Paper>
                     </Container>
