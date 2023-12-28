@@ -1219,7 +1219,7 @@ const ItemAdd = () => {
         label="Unit"
         name='itemLCUnit'
         onChange={handleItemAddChange}
-        width='100px'
+        style={{ width: "40%" }}
       >
         <MenuItem value=""><em>None</em></MenuItem>
         {units.map((unit, index) => (
