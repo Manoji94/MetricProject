@@ -211,7 +211,7 @@ const ItemAdd = () => {
     const [itemAddData, setItemAddData] = useState({ 
         itemMasterRef: "",
         selectedItemMaster: [],
-        isItemMaster: "",
+        isItemMaster: "0",
         itemAddMasterName: "",
         itemIMTENo: "",
         itemImage: "",
@@ -797,19 +797,19 @@ const ItemAdd = () => {
                                     </div>
                                 </div>
                                 <div className="row g-2">
-                                    <div className={itemAddData.itemType === "variable" ? "col-md-5" : "col-md-9"}>
+                                    <div className={itemAddData.itemType === "variable" ? "col-md-5" : "col-md-12"}>
                                         <TextField size='small' variant='outlined' label="MFR.Si.No." onChange={handleItemAddChange} name='itemMFRNo' id='itemMFRNoId' fullWidth />
                                     </div>
                                     <div className={itemAddData.itemType === "variable" ? "col-md-7 d-flex justify-content-between" : "col-md-3 d-flex justify-content-between"}>
                                         {itemAddData.itemType === "variable" && <TextField size='small' variant='outlined' name='itemLC' onChange={handleItemAddChange} id="itemLCId" label="Least Count" fullWidth />}
 
 
-                                        <TextField select size='small' variant='outlined' label="Unit" name='itemLCUnit' onChange={handleItemAddChange} fullWidth >
+                                       {itemAddData.itemType === "variable" && <TextField select size='small' variant='outlined' label="Unit" name='itemLCUnit' onChange={handleItemAddChange} fullWidth >
                                             <MenuItem value=""><em>None</em></MenuItem>
                                             {units.map((unit, index) => (
                                                 <MenuItem key={index} value={unit.unitName}>{unit.unitName}</MenuItem>
                                             ))}
-                                        </TextField>
+                                        </TextField>}
 
                                     </div>
                                     <div className="row g-1">
@@ -1262,7 +1262,7 @@ const ItemAdd = () => {
                                 </div>
 
                             </Paper >
-                            <Paper className='row-6-lg' elevation={12} sx={{ p: 2, mt: 2, height: "inherit" }} >
+                           {(itemAddData.isItemMaster === "0" && itemAddData.itemType !== "referenceStandard") &&  <Paper className='row-6-lg' elevation={12} sx={{ p: 2, mt: 2, height: "inherit" }} >
 
                                 <h5 className='text-center'>Part</h5>
                                 <div className="row">
@@ -1317,7 +1317,7 @@ const ItemAdd = () => {
 
 
                                 </div>
-                            </Paper>
+                            </Paper>}
                         </div>
                         {itemAddData.itemAddMasterName && <Paper sx={{ m: 2, p: 2 }} elevation={12}>
                             <div className="d-flex justify-content-between mb-2">
