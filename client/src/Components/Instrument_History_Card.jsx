@@ -8,86 +8,81 @@ import axios from 'axios';
 import dayjs from 'dayjs';
 
 
-  
+
 function Instrument_History_Card() {
     const [itemList, setItemList] = useState([]);
     const [filteredData, setFilteredData] = useState([]);
     const [filteredIMTEs, setFilteredIMTEs] = useState([])
-    const [distCalName,setDistCalName] = useState([]);
-    const [calDetails,setCalDetails] = useState({
-        calInsName : "",
+    const [distCalName, setDistCalName] = useState([]);
+    const [calDetails, setCalDetails] = useState({
+        calInsName: "",
         calInsIMTENo: "",
     });
     const [selectedRow, setSelectedRow] = useState(null);
 
     useEffect(() => {
         const fetchData = async () => {
-          try {
-            const response = await axios.get(
-              `${process.env.REACT_APP_PORT}/itemCal/getAllItemCals`
-            );
-            console.log(response.data); // Handle the response data as needed
-            setItemList(response.data.result)
-            setFilteredData(response.data.result)
+            try {
+                const response = await axios.get(
+                    `${process.env.REACT_APP_PORT}/itemCal/getAllItemCals`
+                );
+                console.log(response.data); // Handle the response data as needed
+                setItemList(response.data.result)
+                setFilteredData(response.data.result)
 
-            const instrumentName = []
-            const filterData = response.data.result.filter(item => {
-                if (item.calItemName !=="" && !instrumentName.includes(item.calItemName)) {
-                    instrumentName.push(item.calItemName);
-                    return true;
-                }
-                return false;
-            });
-            setDistCalName(instrumentName);
-            console.log(instrumentName, "hi")
+                const instrumentName = []
+                const filterData = response.data.result.filter(item => {
+                    if (item.calItemName !== "" && !instrumentName.includes(item.calItemName)) {
+                        instrumentName.push(item.calItemName);
+                        return true;
+                    }
+                    return false;
+                });
+                setDistCalName(instrumentName);
 
 
-          } catch (error) {
-            console.error('Error fetching data:', error);
-          }
-        
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+
         };
-      
+
         fetchData(); // Call the function to fetch data when the component mounts
-      }, []);
+    }, []);
 
-      
-      const handleSelectionModelChange = (selectionModel) => {
-        // Get the selected row data based on the selection model
-        const selectedRows = selectionModel.map((selectedId) =>
-            filteredData.find((row) => row._id === selectedId)
-        );
-        setSelectedRow(selectedRows[0]); // Assuming single row selection, adjust if needed
-        console.log("Selected Row: ", selectedRows[0]);
-    };
 
-     const handleCalDetails = (e) => {
-        const {name, value} = e.target;
-        
-        if(name === "calInsName"){
-            const imte = itemList.filter((item)=> item.calItemName === value)
+    const handleHistoryCard = (params) => {
+        console.log(params)
+        console.log(params.row)
+    }
+
+    const handleCalDetails = (e) => {
+        const { name, value } = e.target;
+
+        if (name === "calInsName") {
+            const imte = itemList.filter((item) => item.calItemName === value)
             setFilteredIMTEs(imte)
         }
-        setCalDetails((prev) => ({...prev, [name]: value}))
-     }
-      
-
-    
-  const columns = [
-    { field: '_id', headerName: 'SlNo', width: 50, renderCell: (params) => params.api.getAllRowIds().indexOf(params.id) + 1  },
-    { field: 'calItemCalDate', headerName: 'Calibration Date', width: 150, valueGetter: (params) => dayjs(params.row.calItemCalDate).format('DD-MM-YYYY') },
-    { field: 'col3', headerName: 'Calibration Status', width: 150 },
-    { field: 'calItemDueDate', headerName: 'Next calibration Date', width: 150, valueGetter: (params) => dayjs(params.row.calItemDueDate).format('DD-MM-YYYY') },
-    { field: 'col5', headerName: 'Certificate Status', width: 150 },
-    { field: 'calCertificateNo', headerName: 'Certificate No', width: 150 },
-    { field: 'col7', headerName: 'Observed Size 1', width: 150 },
-    { field: 'calUpdatedAt', headerName: 'Calibrated At', width: 150 },
-  ];
-
-  
+        setCalDetails((prev) => ({ ...prev, [name]: value }))
+    }
 
 
-    
+
+    const columns = [
+        { field: '_id', headerName: 'SlNo', width: 50, renderCell: (params) => params.api.getAllRowIds().indexOf(params.id) + 1 },
+        { field: 'calItemCalDate', headerName: 'Calibration Date', width: 150, valueGetter: (params) => dayjs(params.row.calItemCalDate).format('DD-MM-YYYY') },
+        { field: 'col3', headerName: 'Calibration Status', width: 150 },
+        { field: 'calItemDueDate', headerName: 'Next calibration Date', width: 150, valueGetter: (params) => dayjs(params.row.calItemDueDate).format('DD-MM-YYYY') },
+        { field: 'col5', headerName: 'Certificate Status', width: 150 },
+        { field: 'calCertificateNo', headerName: 'Certificate No', width: 150 },
+        { field: 'col7', headerName: 'Observed Size 1', width: 150 },
+        { field: 'calUpdatedAt', headerName: 'Calibrated At', width: 150 },
+    ];
+
+
+
+
+
     return (
         <div>
             <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -108,17 +103,17 @@ function Instrument_History_Card() {
                                 <div className="col-3">
                                     <TextField label="Instrument Name" size="small" onChange={handleCalDetails} select name="calInsName" value={calDetails.calInsName} fullWidth >
                                         <MenuItem value="all">All</MenuItem >
-                                        {distCalName.map((cal)=> (
+                                        {distCalName.map((cal) => (
                                             <MenuItem value={cal}>{cal}</MenuItem >
                                         ))}
-                                        
+
                                     </TextField>
                                 </div>
                                 <div className="col-2">
-                                    <TextField label="IMTE No" size="small"  select  onChange={handleCalDetails} name="calInsIMTENo" value={calDetails.calInsIMTENo} fullWidth >
+                                    <TextField label="IMTE No" size="small" select onChange={handleCalDetails} name="calInsIMTENo" value={calDetails.calInsIMTENo} fullWidth >
                                         <MenuItem value="all">All</MenuItem >
-                                        {filteredIMTEs.map((cal)=> (
-                                        <MenuItem value={cal.calIMTENo}>{cal.calIMTENo}</MenuItem >
+                                        {filteredIMTEs.map((cal) => (
+                                            <MenuItem value={cal.calIMTENo}>{cal.calIMTENo}</MenuItem >
                                         )
                                         )}
                                     </TextField>
@@ -161,39 +156,46 @@ function Instrument_History_Card() {
                                     </div>
                                 </div>
                             </div>
-                            <div className="row">
-                                <div className="col-12">
-                                    <table className="table table-bordered text-center align-middle">
-                                        <thead>
-                                            <tr>
-                                                <th>Serial No</th>
-                                                <th>Model No</th>
-                                                <th>Range / Size</th>
-                                                <th>Calibration Source</th>
-                                                <th>Premissible Size</th>
-                                                <th>Location</th>
-                                                <th>Frequency In Months</th>
-                                                <th>Make</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                    {selectedRow && (
-                                        <tr key={selectedRow._id}>
-                                            <td>1</td>
-                                            <td>{selectedRow.modelNo}</td>
-                                            <td>{selectedRow.calRangeSize}</td>
-                                            <td>{selectedRow.calibrationSource}</td>
-                                            <td>{selectedRow.premissibleSize}</td>
-                                            <td>{selectedRow.location}</td>
-                                            <td>{selectedRow.frequencyInMonths}</td>
-                                            <td>{selectedRow.make}</td>
-                                        </tr>
-                                    )}
-                                        </tbody>
-                                    </table>
+                        </Paper>
+
+                        <Paper
+                            sx={{
+                                p: 2,
+                                display: 'flex',
+                                flexDirection: 'column',
+                                mb: 2
+                            }}
+                            elevation={12}>
+                            <div className="row g-2 mb-2">
+                                <div className="form-floating col-3">
+                                    <TextField label="Serial No." size="small" name="serialNo" ></TextField>
+                                </div>
+                                <div className="form-floating col-3">
+                                    <TextField label="Model No." size="small" name="modelNo"></TextField>
+                                </div>
+                                <div className="form-floating col-3">
+                                    <TextField label="Range / Size" size="small" name="rangeSize"></TextField>
+                                </div>
+                                <div className="form-floating col-3">
+                                    <TextField label="Calibration Source" size="small" name="CalSource"></TextField>
+                                </div>
+                            </div>
+                            <div className="row g-2 mb-2">
+                                <div className="form-floating col d-flex-md-5">
+                                    <TextField label="Premissible Size" size="small" name="premissibleSize"></TextField>
+                                </div>
+                                <div className="form-floating col d-flex-md-5">
+                                    <TextField label="Location" size="small" name="location"></TextField>
+                                </div>
+                                <div className="form-floating col d-flex-md-5">
+                                    <TextField label="Frequency In Months" size="small" name="freqInMonths"></TextField>
+                                </div>
+                                <div className="form-floating col d-flex-md-5">
+                                    <TextField label="Make" size="small" name="make"></TextField>
                                 </div>
                             </div>
                         </Paper>
+
                         <Paper>
                             <DataGrid
                                 rows={filteredData}
@@ -203,12 +205,10 @@ function Instrument_History_Card() {
                                         paginationModel: { page: 0, pageSize: 5 },
                                     },
                                 }}
-                                getRowId={(row)=> row._id}
+                                getRowId={(row) => row._id}
                                 pageSizeOptions={[5, 10]}
                                 checkboxSelection
-                                onSelectionModelChange={(selectionModel) =>
-                                  handleSelectionModelChange(selectionModel)
-                                } 
+                                onRowClick={handleHistoryCard}
                             />
                         </Paper>
                     </Container>
