@@ -43,7 +43,7 @@ import GrnList from '../grnList/GrnList';
 import CalList from '../CalItems/CalList';
 import { Logout } from '@mui/icons-material';
 import { Tooltip } from '@mui/material';
-import Instrument_History_Card from '../Instrument_History_Card';
+import InsHistoryCard from '../InsHistoryCard';
 import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
 import dashboard from '../assets/dashboard.png'
 import admin from '../assets/admin.png'
@@ -148,7 +148,7 @@ export default function Dashboard() {
       { name: "DC List", file: <DcList /> },
       { name: "GRN List", file: <GrnList /> },
       { name: "Cal Data", file: <CalList /> },
-      { name: "History Card", file: <Instrument_History_Card /> },
+      { name: "History Card", file: <InsHistoryCard /> },
       { name: "Gauge List" },
       { name: "Cal Due Report" },
       { name: "Gauge Movement Report" },

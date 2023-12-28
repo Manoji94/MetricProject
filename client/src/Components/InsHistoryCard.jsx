@@ -9,7 +9,7 @@ import dayjs from 'dayjs';
 
 
 
-function Instrument_History_Card() {
+function InsHistoryCard() {
     const [itemList, setItemList] = useState([]);
     const [filteredData, setFilteredData] = useState([]);
     const [filteredIMTEs, setFilteredIMTEs] = useState([])
@@ -18,7 +18,17 @@ function Instrument_History_Card() {
         calInsName: "",
         calInsIMTENo: "",
     });
-    const [selectedRow, setSelectedRow] = useState(null);
+    const [selectedRow, setSelectedRow] = useState({
+        serialNo: '',
+        modelNo: '',
+        rangeSize: '',
+        calSource: '',
+        premissibleSize: '',
+        location: '',
+        freqInMonths: '',
+        make: '',
+
+    });
 
     useEffect(() => {
         const fetchData = async () => {
@@ -54,6 +64,10 @@ function Instrument_History_Card() {
     const handleHistoryCard = (params) => {
         console.log(params)
         console.log(params.row)
+        setSelectedRow((prev)=> ({...prev, rangeSize: params.row.calRangeSize,
+            make: params.row.calItemMake,
+            
+        }))
     }
 
     const handleCalDetails = (e) => {
@@ -168,30 +182,30 @@ function Instrument_History_Card() {
                             elevation={12}>
                             <div className="row g-2 mb-2">
                                 <div className="form-floating col-3">
-                                    <TextField label="Serial No." size="small" name="serialNo" ></TextField>
+                                    <TextField label="Serial No." size="small" name="serialNo" InputProps={{ readOnly: true}} InputLabelProps={{ shrink:true}}></TextField>
                                 </div>
                                 <div className="form-floating col-3">
-                                    <TextField label="Model No." size="small" name="modelNo"></TextField>
+                                    <TextField label="Model No." size="small" name="modelNo" InputProps={{ readOnly: true}} InputLabelProps={{ shrink:true}}></TextField>
                                 </div>
                                 <div className="form-floating col-3">
-                                    <TextField label="Range / Size" size="small" name="rangeSize"></TextField>
+                                    <TextField label="Range / Size" value={selectedRow.rangeSize} size="small" name="rangeSize" InputProps={{ readOnly: true}} InputLabelProps={{ shrink:true}}></TextField>
                                 </div>
                                 <div className="form-floating col-3">
-                                    <TextField label="Calibration Source" size="small" name="CalSource"></TextField>
+                                    <TextField label="Calibration Source" size="small" name="calSource" InputProps={{ readOnly: true}} InputLabelProps={{ shrink:true}}></TextField>
                                 </div>
                             </div>
                             <div className="row g-2 mb-2">
                                 <div className="form-floating col d-flex-md-5">
-                                    <TextField label="Premissible Size" size="small" name="premissibleSize"></TextField>
+                                    <TextField label="Premissible Size" size="small" name="premissibleSize" InputProps={{ readOnly: true}} InputLabelProps={{ shrink:true}}></TextField>
                                 </div>
                                 <div className="form-floating col d-flex-md-5">
-                                    <TextField label="Location" size="small" name="location"></TextField>
+                                    <TextField label="Location" size="small" name="location" InputProps={{ readOnly: true}} InputLabelProps={{ shrink:true}}></TextField>
                                 </div>
                                 <div className="form-floating col d-flex-md-5">
-                                    <TextField label="Frequency In Months" size="small" name="freqInMonths"></TextField>
+                                    <TextField label="Frequency In Months" size="small" name="freqInMonths" InputProps={{ readOnly: true}} InputLabelProps={{ shrink:true}}></TextField>
                                 </div>
                                 <div className="form-floating col d-flex-md-5">
-                                    <TextField label="Make" size="small" name="make"></TextField>
+                                    <TextField label="Make" value={selectedRow.make} size="small" name="make" InputProps={{ readOnly: true}} InputLabelProps={{ shrink:true}}></TextField>
                                 </div>
                             </div>
                         </Paper>
@@ -217,4 +231,4 @@ function Instrument_History_Card() {
         </div>);
 }
 
-export default Instrument_History_Card;
+export default InsHistoryCard;
