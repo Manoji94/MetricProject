@@ -260,7 +260,8 @@ const ItemAdd = () => {
                 acMaxPSError: "",
             }
         ],
-        itemUncertainity: ""
+        itemUncertainity: "",
+        itemUncertainityUnit: "",
     })
 
     //upload Button
@@ -1209,7 +1210,7 @@ const ItemAdd = () => {
         size='small'
         onChange={handleItemAddChange}
         name='itemUncertainty'
-        value={itemAddData.itemUncertainty}
+        value={itemAddData.itemUncertainity}
       />
 
       <TextField
@@ -1217,9 +1218,10 @@ const ItemAdd = () => {
         size='small'
         variant='outlined'
         label="Unit"
-        name='itemLCUnit'
+        name='itemUncertainityUnit'
         onChange={handleItemAddChange}
         style={{ width: "60%" }}
+        value={itemAddData.itemUncertainityUnit}
       >
         <MenuItem value=""><em>None</em></MenuItem>
         {units.map((unit, index) => (
